@@ -101,8 +101,8 @@ separates what was run from what was only written.
 | Test suite strength | Verified | 6 deliberate bugs injected into a copy of the code (wrong SE, SRM threshold, skipped SRM, `>=` vs `>`, no duplicate check, no negative check); every one is caught |
 | Report, memo, charts | Verified | Generated and the PNGs inspected |
 | dbt model **logic** | Verified | The SQL is executed on SQLite and compared with pandas (`tests/test_sql_parity.py`), including singular tests fed data they must reject |
-| dbt **wiring** on DuckDB (`dbt build`) | **Not run** | dbt and DuckDB could not be installed here. First run is on the author's laptop |
-| GitHub Actions workflow | **Not run** | Written, never executed |
+| dbt **wiring** on DuckDB (`dbt build`) | Verified in CI | First GitHub Actions run (2026-10-17): 3 models and 21 data tests, `PASS=24 ERROR=0`, on the synthetic data |
+| GitHub Actions workflow | Verified | First run green: `python` job (lint, tests, run, README check) and `dbt` job |
 | Real Cookie Cats numbers | **Not run** | Kaggle unreachable here; every number above is from synthetic data |
 
 ## Limitations
@@ -117,7 +117,7 @@ separates what was run from what was only written.
 
 ## Roadmap
 
-- [ ] First `dbt build` on DuckDB, then wire the green run into CI
+- [x] First `dbt build` on DuckDB, wired into CI (green on synthetic data)
 - [ ] Re-run on the real Cookie Cats file and replace the synthetic results block
 - [ ] Segment cuts (new vs returning payers) with a pre-declared list, to avoid forking paths
 - [ ] Sequential testing variant with an alpha-spending boundary
