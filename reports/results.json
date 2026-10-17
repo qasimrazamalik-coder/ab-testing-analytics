@@ -1,0 +1,74 @@
+{
+  "config": {
+    "alpha": 0.05,
+    "guardrail_tolerance": -0.05,
+    "n_boot": 5000,
+    "seed": 7,
+    "srm_alpha": 0.001
+  },
+  "data": {
+    "control_label": "gate_30",
+    "n_control": 45006,
+    "n_treatment": 45183,
+    "n_users": 90189,
+    "provenance": "synthetic",
+    "sha256": "dc5401c3c0a55c2d7acc13add709d73a89caf6e5c244975a9676a66f42f2a8d7",
+    "source": "cookie_cats.csv",
+    "treatment_label": "gate_40"
+  },
+  "guardrail": {
+    "ci_high": 0.043857965227878166,
+    "ci_low": -0.052519258422401155,
+    "control_mean": 52.07905612584989,
+    "metric": "mean sum_gamerounds",
+    "n_boot": 5000,
+    "passed": false,
+    "rel_change": -0.00758577366756974,
+    "tolerance": -0.05,
+    "treatment_mean": 51.68399619325853
+  },
+  "metrics": {
+    "retention_1": {
+      "ci_high": 0.0008106045608906919,
+      "ci_low": -0.012167642547014332,
+      "diff": -0.005678518993061821,
+      "p_adjusted": 0.08632570400894342,
+      "p_control": 0.4495622805848109,
+      "p_treatment": 0.4438837615917491,
+      "p_value": 0.08632570400894342,
+      "rel_lift": -0.012631217604988894,
+      "z": -1.7151064935404825
+    },
+    "retention_7": {
+      "ci_high": -0.00423657982213304,
+      "ci_low": -0.014383738079662596,
+      "diff": -0.009310158950897818,
+      "p_adjusted": 0.0006451361094157044,
+      "p_control": 0.19017464338088255,
+      "p_treatment": 0.18086448442998473,
+      "p_value": 0.0003225680547078522,
+      "rel_lift": -0.0489558375679527,
+      "z": -3.5964673458282026
+    }
+  },
+  "power": {
+    "baseline": 0.19017464338088255,
+    "mde_abs_80pct_power": 0.007382984679299091,
+    "n_per_arm": 45006,
+    "primary_metric": "retention_7"
+  },
+  "primary_metric": "retention_7",
+  "srm": {
+    "alpha": 0.001,
+    "chi2": 0.3473705219040016,
+    "expected_control_share": 0.5,
+    "n_control": 45006,
+    "n_treatment": 45183,
+    "p_value": 0.5556054013070388,
+    "passed": true
+  },
+  "verdict": {
+    "decision": "DO_NOT_SHIP",
+    "reason": "The treatment significantly lowers the primary metric."
+  }
+}

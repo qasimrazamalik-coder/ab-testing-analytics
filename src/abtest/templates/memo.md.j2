@@ -1,0 +1,46 @@
+# Experiment decision memo: {{ control_label }} vs {{ treatment_label }}
+
+{% if provenance == "synthetic" -%}
+> **Synthetic data.** This memo was generated from a seeded synthetic dataset to demonstrate the
+> pipeline. The numbers below are not real product results.
+{% endif %}
+**Decision: {{ decision }}.** {{ reason }}
+
+{{ recommendation }}
+
+## Data health
+
+- {{ n_users }} users: {{ n_control }} in {{ control_label }}, {{ n_treatment }} in {{ treatment_label }}.
+- Sample ratio check {{ srm_status }} (chi-square {{ srm_chi2 }}, p = {{ srm_p }}, fails below {{ srm_alpha }}).
+- Source file `{{ source }}`, SHA-256 starts `{{ sha_short }}`.
+
+## Primary metric: {{ primary_label }}
+
+| Metric | {{ control_label }} | {{ treatment_label }} | Difference | 95% interval | p | p (Holm) |
+|---|---|---|---|---|---|---|
+{% for r in rows -%}
+| {{ r.name }} | {{ r.control }} | {{ r.treatment }} | {{ r.diff }} | {{ r.ci }} | {{ r.p_raw }} | {{ r.p_adj }} |
+{% endfor %}
+Effect on {{ primary_label | lower }}: {{ primary_diff }} (95% interval {{ primary_ci }}), Holm-adjusted p = {{ primary_p_adj }}.
+Scaled to 100,000 users that is {{ impact_per_100k }} users (interval {{ impact_ci_per_100k }}).
+
+## Guardrail: average engagement
+
+Mean game rounds: {{ guard_control_mean }} ({{ control_label }}) vs {{ guard_treatment_mean }} ({{ treatment_label }}),
+a relative change of {{ guard_change }} (bootstrap 95% interval {{ guard_ci }}).
+The guardrail is {{ guard_status }}: it passes only if the whole interval stays above the {{ guard_tol }} tolerance.
+
+## Sensitivity
+
+With {{ n_per_arm }} users per arm, this test could reliably detect (80% power) an absolute change of
+about {{ mde }} in the primary metric. Smaller real effects would usually go undetected.
+
+## What this analysis does not cover
+
+- It treats each user once and has no time dimension, so novelty effects cannot be assessed.
+- Retention flags are binary snapshots at day 1 and day 7; longer-term retention is unknown.
+- Statistical significance is not business significance; weigh the effect size against rollout cost.
+
+Method: two-proportion z-test, Holm correction across the two retention metrics (alpha {{ alpha }}),
+percentile bootstrap ({{ n_boot }} resamples, seed {{ seed }}) for the engagement guardrail.
+Full rules: `docs/adr/002-decision-rule.md`.

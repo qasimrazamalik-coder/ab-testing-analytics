@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abtest"
+version = "0.1.0"
+description = "Experiment analytics: SRM check, multiple-testing control, guardrails and a ship/hold/stop decision."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "scipy>=1.11",
+  "matplotlib>=3.8",
+  "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+warehouse = ["duckdb>=1.0", "dbt-core>=1.8,<2.0", "dbt-duckdb>=1.8,<2.0"]
+dev = ["ruff>=0.5"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+abtest = ["templates/*.j2"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]

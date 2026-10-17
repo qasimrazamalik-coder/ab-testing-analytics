@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: fct_experiment_users
+    description: One row per user with arm assignment and outcome flags.
+    columns:
+      - name: user_id
+        description: Unique player id.
+        tests:
+          - unique
+          - not_null
+      - name: variant
+        description: Assigned variant as logged by the game.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["gate_30", "gate_40"]
+      - name: arm
+        description: control or treatment, derived from variant and var control_variant.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["control", "treatment"]
+      - name: game_rounds
+        description: Rounds played in the first 14 days after install.
+        tests:
+          - not_null
+      - name: retained_d1
+        description: 1 if the user returned the day after install.
+        tests:
+          - accepted_values:
+              values: [0, 1]
+              quote: false
+      - name: retained_d7
+        description: 1 if the user returned seven days after install.
+        tests:
+          - accepted_values:
+              values: [0, 1]
+              quote: false
+
+  - name: fct_experiment_results
+    description: One row per variant with the audited counts consumed by the statistical tests.
+    columns:
+      - name: variant
+        tests:
+          - unique
+          - not_null
+      - name: users
+        tests:
+          - not_null

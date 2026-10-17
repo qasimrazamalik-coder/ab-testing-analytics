@@ -1,0 +1,19 @@
+name: ab_testing
+version: "0.1.0"
+config-version: 2
+profile: ab_testing
+
+model-paths: ["models"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  control_variant: gate_30
+
+models:
+  ab_testing:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

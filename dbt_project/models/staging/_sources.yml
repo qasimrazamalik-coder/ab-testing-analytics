@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Landing schema populated by scripts/load_duckdb.py from the experiment CSV.
+    schema: raw
+    tables:
+      - name: cookie_cats
+        description: One row per user exposed to the experiment (Cookie Cats schema).
+        columns:
+          - name: userid
+            description: Unique player id.
+            tests:
+              - unique
+              - not_null
+          - name: version
+            description: Assigned variant, gate_30 (control) or gate_40 (treatment).
+            tests:
+              - not_null

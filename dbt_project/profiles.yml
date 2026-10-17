@@ -1,0 +1,7 @@
+ab_testing:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../warehouse/ab_testing.duckdb
+      threads: 2

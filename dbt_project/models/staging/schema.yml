@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: stg_cookie_cats
+    description: Typed and renamed raw experiment rows. One row per user.
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: variant
+        tests:
+          - not_null

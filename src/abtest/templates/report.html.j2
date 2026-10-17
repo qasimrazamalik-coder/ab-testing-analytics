@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A/B Test Report</title>
+<style>
+  :root { color-scheme: light; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --line:#e4e3df;
+          --blue:#2a78d6; --orange:#eb6834; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--surface); color:var(--ink);
+         font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:880px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:1.5rem; margin:0 0 4px; }
+  h2 { font-size:1.1rem; margin:32px 0 8px; }
+  p.sub { color:var(--ink2); margin:0 0 16px; }
+  .banner { border:1px solid var(--orange); border-left-width:4px; padding:10px 14px; margin:12px 0 20px;
+            color:var(--ink); background:#fff6f1; }
+  .verdict { border:1px solid var(--line); padding:16px; margin:8px 0 16px; }
+  .verdict b.tag { font-size:1.2rem; letter-spacing:.02em; }
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin:16px 0; }
+  .tile { border:1px solid var(--line); padding:12px 14px; }
+  .tile .k { color:var(--ink2); font-size:.8rem; }
+  .tile .v { font-size:1.35rem; font-weight:650; }
+  .tile .n { color:var(--ink2); font-size:.8rem; }
+  figure { margin:16px 0; }
+  figure img { width:100%; height:auto; display:block; border:1px solid var(--line); }
+  figcaption { color:var(--ink2); font-size:.85rem; margin-top:4px; }
+  .tablewrap { overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; font-size:.9rem; }
+  th, td { text-align:left; padding:6px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  th { color:var(--ink2); font-weight:600; }
+  footer { color:var(--ink2); font-size:.8rem; margin-top:32px; }
+  code { font-family:ui-monospace,Menlo,Consolas,monospace; }
+</style>
+</head>
+<body>
+<main>
+  <h1>A/B test report: {{ control_label }} vs {{ treatment_label }}</h1>
+  <p class="sub">Primary metric: {{ primary_label | lower }}. Engagement guardrail: mean game rounds.</p>
+  {% if provenance == "synthetic" %}
+  <div class="banner" role="note"><b>Synthetic data.</b> Generated from a seeded script to demonstrate the pipeline. These are not real product results.</div>
+  {% endif %}
+
+  <section class="verdict" aria-label="Decision">
+    <b class="tag">{{ decision }}</b>
+    <p style="margin:6px 0 0">{{ reason }} {{ recommendation }}</p>
+  </section>
+
+  <section class="tiles" aria-label="Key numbers">
+    <div class="tile"><div class="k">Users analysed</div><div class="v">{{ n_users }}</div><div class="n">{{ n_control }} / {{ n_treatment }}</div></div>
+    <div class="tile"><div class="k">Sample ratio check</div><div class="v">{{ srm_status }}</div><div class="n">p = {{ srm_p }} (fails below {{ srm_alpha }})</div></div>
+    <div class="tile"><div class="k">{{ primary_label }} effect</div><div class="v">{{ primary_diff }}</div><div class="n">95% interval {{ primary_ci }}</div></div>
+    <div class="tile"><div class="k">Engagement guardrail</div><div class="v">{{ guard_change }}</div><div class="n">{{ guard_status }} (tolerance {{ guard_tol }})</div></div>
+  </section>
+
+  <p>Scaled to 100,000 users, the primary-metric effect is <b>{{ impact_per_100k }}</b> retained users (interval {{ impact_ci_per_100k }}).
+     With {{ n_per_arm }} users per arm the test can reliably detect about {{ mde }} (80% power).</p>
+
+  <h2>Results table</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Metric</th><th>{{ control_label }}</th><th>{{ treatment_label }}</th><th>Difference</th><th>95% interval</th><th>p</th><th>p (Holm)</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr><td>{{ r.name }}</td><td>{{ r.control }}</td><td>{{ r.treatment }}</td><td>{{ r.diff }}</td><td>{{ r.ci }}</td><td>{{ r.p_raw }}</td><td>{{ r.p_adj }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Charts</h2>
+  <figure><img src="{{ images.retention }}" alt="Bar chart of day-1 and day-7 retention for each variant with 95% intervals"><figcaption>Retention by variant.</figcaption></figure>
+  <figure><img src="{{ images.effects }}" alt="Three panels showing the treatment effect and 95% interval for day-7 retention, day-1 retention and mean game rounds"><figcaption>Effect sizes with intervals; the engagement panel shows the tolerance line.</figcaption></figure>
+  <figure><img src="{{ images.rounds }}" alt="Histogram of game rounds on a log scale for both variants"><figcaption>Distribution of engagement (log scale).</figcaption></figure>
+  <figure><img src="{{ images.srm }}" alt="Observed arm sizes against the expected 50/50 split"><figcaption>Sample ratio check.</figcaption></figure>
+
+  <footer>
+    Source <code>{{ source }}</code> (SHA-256 <code>{{ sha_short }}</code>…). Two-proportion z-test, Holm correction (alpha {{ alpha }}),
+    percentile bootstrap ({{ n_boot }} resamples, seed {{ seed }}). Rules: <code>docs/adr/002-decision-rule.md</code>.
+  </footer>
+</main>
+</body>
+</html>
